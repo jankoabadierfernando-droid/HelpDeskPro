@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - HelpDeskPro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75 py-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="card bg-dark border-secondary p-4 shadow-lg text-white">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-desktop fa-3x text-success mb-2"></i>
+                <h3 class="fw-bold text-white">Station Login</h3>
+                <p class="text-secondary small mb-0">Enter credentials & your current PC Station</p>
+            </div>
+
+            <form action="{{ url_for('login') }}" method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label text-secondary small fw-bold">Username</label>
+                    <input type="text" id="username" name="username" class="form-control bg-dark text-white border-secondary" placeholder="Enter username" autocomplete="username" required>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="password" class="form-label text-secondary small fw-bold mb-0">Password</label>
+                        <a href="{{ url_for('forgot_password') }}" class="text-success small text-decoration-none">Forgot?</a>
+                    </div>
+                    <!-- Password Field with Show/Hide Toggle -->
+                    <div class="input-group mt-1">
+                        <input type="password" id="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="Enter password" autocomplete="current-password" required>
+                        <button class="btn btn-outline-secondary border-secondary text-secondary" type="button" onclick="togglePassword('password', 'toggle-icon-login')">
+                            <i class="fa-solid fa-eye" id="toggle-icon-login"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="station" class="form-label text-warning small fw-bold">
+                        <i class="fa-solid fa-location-dot me-1"></i>Current PC Station Number (Mandatory)
+                    </label>
+                    <input type="text" id="station" name="station" class="form-control bg-dark text-white border-warning" placeholder="e.g. 14" required>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-3 shadow">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In to Station
+                </button>
+            </form>
+
+            <div class="text-center pt-2 border-top border-secondary">
+                <small class="text-secondary">Don't have an account? 
+                    <a href="{{ url_for('register') }}" class="text-success text-decoration-none fw-bold">Register here</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Visibility Script -->
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>
+{% endblock %}

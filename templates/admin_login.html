@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Portal Login - HelpDeskPro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-5">
+        <div class="card bg-dark border-secondary shadow-lg p-4 text-white">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-user-shield fa-3x text-warning mb-2"></i>
+                <h3 class="fw-bold">Staff / Admin Portal</h3>
+                <p class="text-secondary small">Restricted access for Rand Internet Cafe administrators.</p>
+            </div>
+
+            <form action="{{ url_for('admin_login') }}" method="POST">
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">Admin Username</label>
+                    <input type="text" name="username" class="form-control bg-black text-white border-secondary" required placeholder="Enter admin username">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-secondary small fw-bold">Password</label>
+                    <input type="password" name="password" class="form-control bg-black text-white border-secondary" required placeholder="Enter password">
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 fw-bold py-2 text-dark">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Access Control Center
+                </button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <a href="{{ url_for('login') }}" class="text-decoration-none text-info small">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Customer Station Login
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

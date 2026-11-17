@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HelpDeskPro - Rand Internet Cafe{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <style>
+        /* Floating Toast Container in Top Right */
+        .toast-container-custom {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1090;
+            min-width: 300px;
+            max-width: 380px;
+        }
+
+        /* Toast Popup Style */
+        .auto-popup-alert {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-white d-flex flex-column min-vh-100">
+
+    <!-- Navbar Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary shadow-sm py-3">
+        <div class="container">
+            <!-- Brand Logo / Title -->
+            <a class="navbar-brand fw-bold text-success d-flex align-items-center" href="{{ url_for('index') }}">
+                <i class="fa-solid fa-headset fa-lg me-2 text-info"></i>HelpDeskPro
+            </a>
+
+            <!-- Toggle Button for Mobile View -->
+            <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navbar Right Side Actions -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <div class="d-flex align-items-center mt-3 mt-lg-0">
+                    {% if session.get('user_id') %}
+                        <!-- Station Badge -->
+                        <span class="badge bg-secondary me-2 p-2">
+                            <i class="fa-solid fa-desktop text-info me-1"></i> {{ session.get('station', '#36') }}
+                        </span>
+                        
+                        <!-- Click-only User Dropdown Menu -->
+                        <div class="dropdown">
+                            <a href="#" class="btn btn-outline-light btn-sm fw-bold dropdown-toggle d-flex align-items-center" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-user text-primary me-1"></i> {{ session.get('username') }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow border-secondary mt-2" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ url_for('profile') }}">
+                                        <i class="fa-solid fa-gear me-2 text-info"></i>Settings
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider border-secondary"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="fa-solid fa-power-off me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <!-- Guest Links -->
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm me-2">Sign In</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-success btn-sm fw-bold">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Floating Auto-Dismiss Toast Messages Container -->
+    <div class="toast-container-custom">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% set alert_class = 'bg-info text-dark' %}
+                    {% if category == 'success' %}{% set alert_class = 'bg-success text-white' %}{% endif %}
+                    {% if category == 'danger' or category == 'error' %}{% set alert_class = 'bg-danger text-white' %}{% endif %}
+                    {% if category == 'warning' %}{% set alert_class = 'bg-warning text-dark' %}{% endif %}
+
+                    <div class="alert {{ alert_class }} alert-dismissible fade show auto-popup-alert border-0 py-2 px-3 mb-2 rounded fw-semibold d-flex align-items-center justify-content-between" role="alert">
+                        <div>
+                            <i class="fa-solid fa-circle-info me-2"></i>{{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white ms-3" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="container flex-grow-1 my-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-secondary text-center py-3 border-top border-secondary mt-auto small">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 HelpDeskPro &bull; Rand Internet Cafe Station Management System</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Auto-Dismiss Popups Script (Stays for 3 Seconds) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.auto-popup-alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 3000); // 3000ms = 3 seconds
+            });
+        });
+    </script>
+</body>
+</html>

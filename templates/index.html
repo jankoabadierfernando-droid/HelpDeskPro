@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - HelpDeskPro | RAND Internet Cafe{% endblock %}
+
+{% block content %}
+<div class="row align-items-center justify-content-center min-vh-75 py-5 text-center text-lg-start">
+    <div class="col-lg-7 mb-4 mb-lg-0">
+        <span class="badge bg-primary px-3 py-2 rounded-pill mb-3">RAND Internet Cafe Terminal Hub</span>
+        <h1 class="display-4 fw-bold text-white mb-3">Fast IT Support & Café Snacks directly to your PC.</h1>
+        <p class="lead text-secondary mb-4">
+            HelpDeskPro allows internet cafe users to instantly request technical support, report PC station glitches, and order food directly from their station.
+
+        </p>
+        
+        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4 fw-bold">
+                <i class="fa-solid fa-right-to-bracket me-2"></i>Sign In to Station
+            </a>
+            <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-4 fw-bold">
+                <i class="fa-solid fa-user-plus me-2"></i>Create Account
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="card bg-dark border-secondary p-4 text-white shadow-lg">
+            <h5 class="fw-bold mb-3 border-bottom border-secondary pb-2">
+                <i class="fa-solid fa-shield-halved text-primary me-2"></i>System Features
+            </h5>
+            <ul class="list-unstyled mb-0">
+                <li class="mb-3 d-flex align-items-center">
+                    <i class="fa-solid fa-wrench text-warning me-3 fa-lg"></i>
+                    <div>
+                        <strong class="d-block">Instant Tech Assistance</strong>
+                        <small class="text-secondary">Report PC freezes, audio issues, or driver crashes.</small>
+                    </div>
+                </li>
+                <li class="mb-3 d-flex align-items-center">
+                    <i class="fa-solid fa-utensils text-success me-3 fa-lg"></i>
+                    <div>
+                        <strong class="d-block">In-Seat Snack Ordering</strong>
+                        <small class="text-secondary">Order drinks and instant noodles delivered to Station #14.</small>
+                    </div>
+                </li>
+                <li class="d-flex align-items-center">
+                    <i class="fa-solid fa-headset text-info me-3 fa-lg"></i>
+                    <div>
+                        <strong class="d-block">Real-Time Admin Dispatch</strong>
+                        <small class="text-secondary">Direct communication with cafe attendants.</small>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

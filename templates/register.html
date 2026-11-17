@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - HelpDeskPro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75 py-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card bg-dark border-secondary p-4 shadow-lg text-white">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-user-plus fa-3x text-success mb-2"></i>
+                <h3 class="fw-bold text-white">Create Account</h3>
+                <p class="text-secondary small mb-0">Register profile for RAND Internet Cafe</p>
+            </div>
+
+            <form action="{{ url_for('register') }}" method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label text-secondary small fw-bold">Username</label>
+                    <input type="text" id="username" name="username" class="form-control bg-dark text-white border-secondary" placeholder="Choose username (letters & numbers)" autocomplete="username" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label text-secondary small fw-bold">Gmail Address (for Account Recovery)</label>
+                    <input type="email" id="email" name="email" class="form-control bg-dark text-white border-secondary" placeholder="example@gmail.com" autocomplete="email" required>
+                </div>
+
+                <div class="row">
+                    <!-- Password Field with Show/Hide Toggle & minlength enforcement -->
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label text-secondary small fw-bold">Password</label>
+                        <div class="input-group">
+                            <input type="password" id="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="Min 6 chars" minlength="6" autocomplete="new-password" required>
+                            <button class="btn btn-outline-secondary border-secondary text-secondary" type="button" onclick="togglePassword('password', 'toggle-icon-1')">
+                                <i class="fa-solid fa-eye" id="toggle-icon-1"></i>
+                            </button>
+                        </div>
+                        <div class="form-text text-muted" style="font-size: 0.7rem;">At least 6 chars</div>
+                    </div>
+                    <!-- Confirm Password Field with Show/Hide Toggle & minlength enforcement -->
+                    <div class="col-md-6 mb-4">
+                        <label for="confirm_password" class="form-label text-secondary small fw-bold">Confirm Password</label>
+                        <div class="input-group">
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control bg-dark text-white border-secondary" placeholder="Re-type" minlength="6" autocomplete="new-password" required>
+                            <button class="btn btn-outline-secondary border-secondary text-secondary" type="button" onclick="togglePassword('confirm_password', 'toggle-icon-2')">
+                                <i class="fa-solid fa-eye" id="toggle-icon-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-3 shadow">
+                    <i class="fa-solid fa-check-circle me-2"></i>Complete Registration
+                </button>
+            </form>
+
+            <div class="text-center pt-2 border-top border-secondary">
+                <small class="text-secondary">Already have an account? 
+                    <a href="{{ url_for('login') }}" class="text-success text-decoration-none fw-bold">Login here</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Visibility Script -->
+<script>
+    function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>
+{% endblock %}

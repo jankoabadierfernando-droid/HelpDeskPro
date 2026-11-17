@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - HelpDeskPro{% endblock %}
+
+{% block content %}
+<div class="row py-4">
+    <!-- Header Title with Back Button -->
+    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-gear text-info me-2"></i>User Settings & Preferences</h3>
+            <p class="text-secondary small mb-0">Manage your terminal account, change security credentials, or view application info.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm fw-bold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Station Hub
+            </a>
+        </div>
+    </div>
+
+    <!-- Settings Navigation Sidebar -->
+    <div class="col-lg-3 mb-4">
+        <div class="card bg-dark border-secondary shadow-sm p-2">
+            <div class="nav flex-column nav-pills custom-settings-tabs" id="settingsTab" role="tablist">
+                <button class="nav-link active text-start fw-bold py-3 px-3 mb-2 bg-success text-dark" id="account-tab" data-bs-toggle="pill" data-bs-target="#account-content" type="button" role="tab">
+                    <i class="fa-solid fa-user-circle me-2"></i>Account Info
+                </button>
+                <button class="nav-link text-start fw-bold py-3 px-3 mb-2 text-white bg-secondary bg-opacity-10 border border-secondary" id="security-tab" data-bs-toggle="pill" data-bs-target="#security-content" type="button" role="tab">
+                    <i class="fa-solid fa-shield-halved me-2"></i>Security & Password
+                </button>
+                <button class="nav-link text-start fw-bold py-3 px-3 mb-2 text-white bg-secondary bg-opacity-10 border border-secondary" id="about-tab" data-bs-toggle="pill" data-bs-target="#about-content" type="button" role="tab">
+                    <i class="fa-solid fa-circle-info me-2"></i>About HelpDeskPro
+                </button>
+                <hr class="border-secondary my-2">
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-danger text-start fw-bold py-2 px-3">
+                    <i class="fa-solid fa-power-off me-2"></i>Sign Out of Station
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Content Area -->
+    <div class="col-lg-9">
+        <div class="tab-content" id="settingsTabContent">
+            
+            <!-- TAB 1: ACCOUNT INFO -->
+            <div class="tab-pane fade show active" id="account-content" role="tabpanel">
+                <div class="card bg-dark border-secondary p-4 shadow-lg text-white">
+                    <h5 class="fw-bold mb-3 text-success border-bottom border-secondary pb-2">
+                        <i class="fa-solid fa-id-card me-2"></i>Terminal Account Information
+                    </h5>
+                    
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-bold">Username</label>
+                        <input type="text" class="form-control bg-black text-white border-secondary" value="{{ session.get('username') }}" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-bold">Connected Station Terminal</label>
+                        <input type="text" class="form-control bg-black text-white border-secondary" value="{{ session.get('station', '#36') }}" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-secondary small fw-bold">Assigned Role</label>
+                        <input type="text" class="form-control bg-black text-white border-secondary text-uppercase" value="{{ session.get('role', 'Customer') }}" readonly>
+                    </div>
+
+                    <div class="alert alert-secondary bg-secondary bg-opacity-10 border-secondary text-light small mt-3 mb-0">
+                        <i class="fa-solid fa-circle-info text-info me-2"></i>Station bindings and permissions are automatically managed by Rand Internet Cafe staff administrators.
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SECURITY & PASSWORD -->
+            <div class="tab-pane fade" id="security-content" role="tabpanel">
+                <div class="card bg-dark border-secondary p-4 shadow-lg text-white">
+                    <h5 class="fw-bold mb-3 text-warning border-bottom border-secondary pb-2">
+                        <i class="fa-solid fa-key me-2"></i>Change Account Password
+                    </h5>
+
+                    <form action="{{ url_for('change_password') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">Current Password</label>
+                            <input type="password" name="old_password" class="form-control bg-dark text-white border-secondary" required placeholder="Enter current password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-bold">New Password</label>
+                            <input type="password" name="new_password" class="form-control bg-dark text-white border-secondary" required placeholder="Enter new password">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-bold">Confirm New Password</label>
+                            <input type="password" name="confirm_password" class="form-control bg-dark text-white border-secondary" required placeholder="Confirm new password">
+                        </div>
+
+                        <button type="submit" class="btn btn-success fw-bold px-4 py-2">
+                            <i class="fa-solid fa-check me-2"></i>Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 3: ABOUT HELPDESKPRO -->
+            <div class="tab-pane fade" id="about-content" role="tabpanel">
+                <div class="card bg-dark border-secondary p-4 shadow-lg text-white">
+                    <h5 class="fw-bold mb-3 text-info border-bottom border-secondary pb-2">
+                        <i class="fa-solid fa-headset me-2"></i>About HelpDeskPro
+                    </h5>
+                    
+                    <p class="text-secondary">
+                        <strong>HelpDeskPro</strong> is an advanced IT Support Ticketing and Cafeteria Management System engineered specifically for high-performance internet lounges like <strong>Rand Internet Cafe</strong>.
+                    </p>
+
+                    <div class="row g-3 my-2">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-secondary bg-opacity-10 border border-secondary rounded">
+                                <h6 class="fw-bold text-success mb-1"><i class="fa-solid fa-code me-2"></i>Tech Stack</h6>
+                                <p class="small text-secondary mb-0">Python Flask, SQLAlchemy, MySQL, Bootstrap 5, and FontAwesome.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-secondary bg-opacity-10 border border-secondary rounded">
+                                <h6 class="fw-bold text-warning mb-1"><i class="fa-solid fa-building-shield me-2"></i>Environment</h6>
+                                <p class="small text-secondary mb-0">Local Terminal Hub Client &bull; Sta. Cruz Branch Integration.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="small text-muted mt-3 mb-0">&copy; 2026 HelpDeskPro System. All rights reserved.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle active tab background color switching -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('#settingsTab .nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => {
+                    l.classList.remove('bg-success', 'text-dark');
+                    l.classList.add('bg-secondary', 'bg-opacity-10', 'text-white', 'border', 'border-secondary');
+                });
+                this.classList.remove('bg-secondary', 'bg-opacity-10', 'text-white', 'border', 'border-secondary');
+                this.classList.add('bg-success', 'text-dark');
+            });
+        });
+    });
+</script>
+{% endblock %}

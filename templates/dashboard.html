@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}Station Hub - HelpDeskPro{% endblock %}
+
+{% block content %}
+<div class="row py-4">
+    <!-- Top Station Banner -->
+    <div class="col-12 mb-4">
+        <div class="card bg-dark border-secondary p-3 shadow-sm d-flex flex-row justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold text-white mb-1"><i class="fa-solid fa-desktop text-success me-2"></i>Welcome, {{ session.get('username', 'Player') }}!</h4>
+                <p class="text-secondary small mb-0">Connected Terminal: <span class="badge bg-success fs-6">{{ session.get('station', '#36') }}</span></p>
+            </div>
+            <div>
+                <span class="text-muted small"><i class="fa-solid fa-clock me-1"></i>Session Active</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Navigation Tabs for Dashboard Hub -->
+    <div class="col-12 mb-4">
+        <ul class="nav nav-pills custom-tabs" id="dashboardTab" role="tablist">
+            <li class="nav-item me-2" role="presentation">
+                <button class="nav-link active fw-bold px-4 py-2 bg-success text-dark" id="cafe-tab" data-bs-toggle="pill" data-bs-target="#cafe-content" type="button" role="tab">
+                    <i class="fa-solid fa-utensils me-2"></i>Cafeteria Menu & Ordering
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold px-4 py-2 bg-dark text-secondary border border-secondary" id="support-tab" data-bs-toggle="pill" data-bs-target="#support-content" type="button" role="tab">
+                    <i class="fa-solid fa-headset me-2"></i>Self-Help & Support Tickets
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content Area -->
+    <div class="tab-content" id="dashboardTabContent">
+        
+        <!-- TAB 1: CAFETERIA ORDERING DASHBOARD -->
+        <div class="tab-pane fade show active" id="cafe-content" role="tabpanel">
+            <div class="row">
+                <!-- Left Menu Items Grid -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card bg-dark border-secondary p-4 shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                            <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-burger text-warning me-2"></i>Rand Cafe Menu</h5>
+                            <!-- Category Filter Buttons -->
+                            <div class="btn-group btn-group-sm" role="group" id="filter-buttons">
+                                <button type="button" class="btn btn-outline-light active" onclick="filterMenu('all', this)">All</button>
+                                <button type="button" class="btn btn-outline-light" onclick="filterMenu('snacks', this)">Snacks</button>
+                                <button type="button" class="btn btn-outline-light" onclick="filterMenu('drinks', this)">Drinks</button>
+                                <button type="button" class="btn btn-outline-light" onclick="filterMenu('noodles', this)">Noodles</button>
+                            </div>
+                        </div>
+
+                        <!-- Menu Items Grid (Connected to Database with Uniform Image Fit & Category Class) -->
+                        <div class="row g-3" id="menu-items-grid">
+                            {% for item in menu_items %}
+                            <div class="col-md-4 menu-card-wrapper" data-category="{{ (item.category or item.name) | lower }}">
+                                <div class="card bg-secondary bg-opacity-10 border-secondary h-100 p-2 text-white">
+                                    {% if item.image_url %}
+                                    <div class="ratio ratio-4x3 bg-black rounded overflow-hidden mb-2">
+                                        <img src="{{ url_for('static', filename='uploads/menu/' + item.image_url) }}" class="w-100 h-100 object-fit-cover rounded" alt="{{ item.name }}">
+                                    </div>
+                                    {% else %}
+                                    <div class="ratio ratio-4x3 bg-secondary bg-opacity-25 rounded text-center d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa-solid fa-utensils fa-2x text-secondary"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="card-body p-2 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <h6 class="fw-bold mb-1 text-truncate">{{ item.name }}</h6>
+                                            <p class="text-secondary small mb-2 text-truncate-2" style="font-size: 0.75rem;">{{ item.description or 'Freshly prepared at Rand Cafe.' }}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <span class="text-success fw-bold">₱{{ "%.2f"|format(item.price) }}</span>
+                                            <button class="btn btn-success btn-sm py-0 px-2 fw-bold" onclick="addToCart('{{ item.name }}', {{ item.price }})">+ Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-12 text-center py-5 text-muted">
+                                <i class="fa-solid fa-utensils fa-3x mb-3 text-secondary opacity-50"></i>
+                                <h6 class="text-white fw-bold">Menu is currently empty</h6>
+                                <p class="small text-secondary mb-0">No food or drinks have been added by the admin yet. Check back soon!</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Live Shopping Cart Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card bg-dark border-secondary p-4 shadow-lg sticky-top" style="top: 20px;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-cart-shopping text-success me-2"></i>Order Summary</h5>
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 font-monospace" style="font-size: 0.75rem;" onclick="clearCart()">Clear Cart</button>
+                        </div>
+                        <p class="text-secondary small">Items will be delivered directly to <span class="text-white fw-bold">{{ session.get('station', '#36') }}</span>.</p>
+                        
+                        <hr class="border-secondary">
+
+                        <!-- Cart Items List Container -->
+                        <div class="cart-items-container mb-3" id="cart-items-list" style="min-height: 150px; max-height: 250px; overflow-y: auto;">
+                            <div class="text-center text-muted py-4 small" id="empty-cart-msg">
+                                Your cart is empty. Click "+ Add" on any menu item.
+                            </div>
+                        </div>
+
+                        <hr class="border-secondary">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-secondary fw-bold">Total Amount:</span>
+                            <span class="fs-5 fw-bold text-success" id="cart-total">₱0.00</span>
+                        </div>
+
+                        <form action="{{ url_for('place_order') }}" method="POST" id="order-form">
+                            <input type="hidden" name="cart_data" id="cart-data-input">
+                            <input type="hidden" name="total_amount" id="total-amount-input">
+
+                            <button type="button" class="btn btn-success w-100 fw-bold py-2 shadow" id="place-order-btn" disabled data-bs-toggle="modal" data-bs-target="#orderSuccessModal">
+                                <i class="fa-solid fa-paper-plane me-2"></i>PLACE ORDER TO STATION
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: SELF-HELP PORTAL & IT SUPPORT TICKETING -->
+        <div class="tab-pane fade" id="support-content" role="tabpanel">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card bg-dark border-secondary p-4 shadow-lg">
+                        <div class="text-center mb-4">
+                            <i class="fa-solid fa-screwdriver-wrench fa-3x text-info mb-2"></i>
+                            <h4 class="fw-bold text-white">Self-Help Portal & IT Support</h4>
+                            <p class="text-secondary small">Experiencing hardware issues, network lag, or peripheral failures? Submit a ticket for immediate staff assistance at your station.</p>
+                        </div>
+
+                        <form action="{{ url_for('submit_ticket') }}" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small fw-bold">Issue Category</label>
+                                <select name="category" class="form-select bg-dark text-white border-secondary">
+                                    <option value="Hardware Failure">Hardware Failure (Headset, Mouse, Keyboard)</option>
+                                    <option value="Network Lag">Network / Connection Lag (High Ping / Packet Loss)</option>
+                                    <option value="Billing Request">Billing / Time Extension Request</option>
+                                    <option value="Other">Other Technical Assistance</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label text-secondary small fw-bold">Describe the Problem</label>
+                                <textarea name="description" class="form-control bg-dark text-white border-secondary" rows="4" placeholder="Briefly describe what happened..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i>Submit Support Ticket to Staff
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Order Confirmation Modal Popup -->
+<div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white shadow-lg text-center p-4">
+            <div class="modal-body">
+                <div class="mb-3">
+                    <i class="fa-solid fa-circle-check text-success fa-4x"></i>
+                </div>
+                <h3 class="fw-bold text-white mb-2" id="orderSuccessModalLabel">Confirm Station Order?</h3>
+                <p class="text-secondary mb-4">
+                    Your snacks and drinks order will be queued and delivered directly to <span class="text-info fw-bold">{{ session.get('station', '#36') }}</span> by the cafe staff shortly!
+                </p>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary w-50 fw-bold py-2" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success w-50 fw-bold py-2" onclick="submitOrder()">Confirm & Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Frontend Logic Script: Cart & Category Filtering -->
+<script>
+    let cart = [];
+    let currentTotal = 0;
+
+    // Category Filter Function
+    function filterMenu(category, btnElement) {
+        // Update active button state
+        const buttons = document.querySelectorAll('#filter-buttons .btn');
+        buttons.forEach(btn => btn.classList.remove('active', 'btn-success', 'btn-outline-light'));
+        buttons.forEach(btn => btn.classList.add('btn-outline-light'));
+        btnElement.classList.remove('btn-outline-light');
+        btnElement.classList.add('active', 'btn-success');
+
+        // Filter cards
+        const cards = document.querySelectorAll('.menu-card-wrapper');
+        cards.forEach(card => {
+            const cardCategory = card.getAttribute('data-category');
+            if (category === 'all' || cardCategory.includes(category)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function addToCart(name, price) {
+        let existingItem = cart.find(item => item.name === name);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ name: name, price: price, quantity: 1 });
+        }
+        renderCart();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    function clearCart() {
+        cart = [];
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartList = document.getElementById('cart-items-list');
+        const totalElem = document.getElementById('cart-total');
+        const orderBtn = document.getElementById('place-order-btn');
+
+        cartList.innerHTML = '';
+
+        if (cart.length === 0) {
+            cartList.innerHTML = '<div class="text-center text-muted py-4 small" id="empty-cart-msg">Your cart is empty. Click "+ Add" on any menu item.</div>';
+            totalElem.innerText = '₱0.00';
+            orderBtn.disabled = true;
+            currentTotal = 0;
+            return;
+        }
+
+        orderBtn.disabled = false;
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            let itemTotal = item.price * item.quantity;
+            total += itemTotal;
+
+            cartList.innerHTML += `
+                <div class="d-flex justify-content-between align-items-center mb-2 text-white small bg-secondary bg-opacity-10 p-2 rounded">
+                    <div>
+                        <span class="fw-bold">${item.quantity}x</span> ${item.name}
+                        <br><span class="text-success">₱${itemTotal.toFixed(2)}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm text-danger p-0" onclick="removeFromCart(${index})" title="Remove item">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+        });
+
+        currentTotal = total;
+        totalElem.innerText = `₱${total.toFixed(2)}`;
+    }
+
+    function submitOrder() {
+        document.getElementById('cart-data-input').value = JSON.stringify(cart);
+        document.getElementById('total-amount-input').value = currentTotal;
+        document.getElementById('order-form').submit();
+    }
+</script>
+{% endblock %}
